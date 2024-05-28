@@ -1,4 +1,3 @@
-// GlobalContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // Creamos el contexto global
@@ -7,6 +6,7 @@ const GlobalContext = createContext();
 // Creamos un proveedor para el contexto global
 export const GlobalProvider = ({ children }) => {
   const [historias, setHistorias] = useState([]); // Estado para almacenar las historias
+  const [dataHistoria, setDataHistoria] = useState(null); // Estado para la historia seleccionada
 
   // Cargar los datos de bd.json al montar el componente
   useEffect(() => {
@@ -16,8 +16,21 @@ export const GlobalProvider = ({ children }) => {
       .catch(error => console.error('Error loading data:', error));
   }, []);
 
+  const updateHistoria = (updatedHistoria) => {
+    setHistorias((prevHistorias) =>
+      prevHistorias.map((historia) =>
+        historia.id === updatedHistoria.id ? updatedHistoria : historia
+      )
+    );
+  };
+
+  const addHistoria = (newHistoria) => {
+    newHistoria.id = Date.now(); // Asigna un ID único
+    setHistorias((prevHistorias) => [...prevHistorias, newHistoria]);
+  };
+
   return (
-    <GlobalContext.Provider value={{ historias, setHistorias }}>
+    <GlobalContext.Provider value={{ historias, dataHistoria, setDataHistoria, updateHistoria, addHistoria }}>
       {children}
     </GlobalContext.Provider>
   );
